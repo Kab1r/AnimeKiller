@@ -9,6 +9,20 @@ import cv2
 import urllib
 
 # Dataset Imports
+animeFilenames = tf.train.string_input_producer(tf.train.match_filenames_once(data/anime/*.jpeg))
+notAnimeFilenames = tf.train.string_input_producer(tf.train.match_filenames_once(data/notAnime/*.jpeg))
+
+image_reader = tf.WholeFileReader()
+
+anime_image_file = image_reader.read(animeFilenames)
+not_anime_immage_file = image.read(notAnimeFilenames)
+
+animeImage = tf.image.decode_jpeg(anime_image_file)
+notAnimeImage = tf.image.decode_jpeg(not_anime_image_file)
+
+with tf.Session() as sess:
+	tf.initialize_all_variables().run()
+	coord
 
 # Train Models
 
