@@ -1,1 +1,1 @@
-worker: python3 RunBot.py
+worker: python3 runBot.py
