@@ -3,47 +3,62 @@ import requests
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-import tensorflow as tf
-import numpy as np
 import cv2
-import urllib
+import sys
+import os.path
+import numpy as np
+from urllib.request import Request, urlopen
+cascade_file = "lbpcascade_animeface.xml"
 
-# Dataset Imports
-animeFilenames = tf.train.string_input_producer(tf.train.match_filenames_once(data/anime/*.jpeg))
-notAnimeFilenames = tf.train.string_input_producer(tf.train.match_filenames_once(data/notAnime/*.jpeg))
 
-image_reader = tf.WholeFileReader()
+def url_to_image(url):
+	# download the image, convert it to a NumPy array, and then read
+	# it into OpenCV format
+	print(url)
+	req = Request(url)
+	req.add_header(
+		'accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+	)
+	req.add_header(
+		'user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.53 Safari/537.36'
+	)
+	resp = urlopen(req)
+	image = np.asarray(bytearray(resp.read()), dtype="uint8")
+	image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-anime_image_file = image_reader.read(animeFilenames)
-not_anime_immage_file = image.read(notAnimeFilenames)
+	# return the image
+	return image
 
-animeImage = tf.image.decode_jpeg(anime_image_file)
-notAnimeImage = tf.image.decode_jpeg(not_anime_image_file)
 
-with tf.Session() as sess:
-	tf.initialize_all_variables().run()
-	coord
+def detect(image):
+	if not os.path.isfile(cascade_file):
+		raise RuntimeError("%s: not found" % cascade_file)
 
-# Train Models
+	cascade = cv2.CascadeClassifier(cascade_file)
+	# image = cv2.imread(filename, cv2.IMREAD_COLOR)
+	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	gray = cv2.equalizeHist(gray)
 
-# Test Image
-def isAnime(url):
-	req = urllib.request.Request(url)
-	image = urllib.request.urlopen(req).read()
-	#pool3_features = sess.run(pool3,{'incept/DecodeJpeg/contents:0': image.read()})
-	image.resize((299, 299), image.ANTIALIAS)
-	image_array = np.array(image)[:, :, 0:3] # RGB only
+	faces = cascade.detectMultiScale(gray,
+									 # detector options
+									 scaleFactor=1.1,
+									 minNeighbors=5,
+									 minSize=(24, 24))
+	return len(faces)
 
 # Discord
 
+
 descr = 'An open source solution to the anime epidemic on Discord.'
 
-bot = commands.Bot(command_prefix = 'ak!',
-    description = descr)
+bot = commands.Bot(command_prefix='ak!',
+				   description=descr)
 
 picEXT = ['.jpeg', '.png', '.jpg']
 
 # On Ready Function
+
+
 @bot.event
 async def on_ready():
 	print('Logged in as')
@@ -51,13 +66,20 @@ async def on_ready():
 	print('ID:')
 	print(bot.user.id)
 
+
 @bot.event
 async def on_message(message):
-    for ext in picEXT:
-        if message.content.endswith(ext):
-            url = message.attachments[0]['url']
-            if isAnime(url):
-            	await bot.delete_message(message)
+	for ext in picEXT:
+		for attachment in message.attachments:
+			if attachment.url.endswith(ext):
+				url = attachment.url
+				number_of_faces = detect(url_to_image(url))
+				if number_of_faces > 0:
+					await message.delete()
+					await message.channel.send(
+						"Image containing {0} anime faces was deleted".format(
+							number_of_faces)
+						)
 # Run Discord
 # Gets token from 'token.secret' file
 token = open('token.secret', 'r').read()
