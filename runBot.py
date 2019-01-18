@@ -8,6 +8,9 @@ import sys
 import os.path
 import numpy as np
 from urllib.request import Request, urlopen
+
+import os
+
 cascade_file = "lbpcascade_animeface.xml"
 
 
@@ -81,6 +84,9 @@ async def on_message(message):
 							number_of_faces)
 						)
 # Run Discord
-# Gets token from 'token.secret' file
-token = open('token.secret', 'r').read()
+# Gets token from 'token.secret' file or Heroku
+if (os.environ.get('IS_HEROKU', None)):
+	token = os.environ.get('TOKEN', None)
+else:
+	token = open('token.secret', 'r').read()
 bot.run(token)
