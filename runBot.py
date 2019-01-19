@@ -100,7 +100,7 @@ async def on_message(message):
 						"Image containing {0} anime faces was deleted".format(
 							number_of_faces)
 						)
-			if message.content.lower().endswith(ext):
+		if message.content.lower().endswith(ext):
 				url = message.content[
 					message.content.lower().index("http"):]
 				number_of_faces = detect(url)
@@ -110,7 +110,7 @@ async def on_message(message):
                         "Image containing {0} anime faces was deleted".format(
                             number_of_faces)
                         )
-			if attachment.content.lower().endswith('.gif'):
+		if attachment.content.lower().endswith('.gif'):
 				url = message.content[
 					message.content.lower().index("http"):]
 				number_of_faces = detect(url)
