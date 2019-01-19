@@ -113,7 +113,6 @@ async def on_message(message):
 		if message.content.lower().endswith('.gif'):
 				url = message.content[
 					message.content.lower().index("http"):]
-				number_of_faces = detect(url)
 				number_of_faces = gif_detect(url_to_image(url))
 				if number_of_faces > 0:
 					await message.delete()
