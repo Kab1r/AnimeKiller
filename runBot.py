@@ -49,8 +49,8 @@ def detect(image):
 									 minSize=(24, 24))
 	return len(faces)
 
-def gif_detect(gif):
-	clip = VideoFileClip(gif)
+def gif_detect(url):
+	clip = VideoFileClip(url)
 	for frame in clip.iter_frames(): # Each Frame in gif Clip
 		number_of_faces = detect(frame)
 		if (number_of_faces > 0):
@@ -84,15 +84,45 @@ async def on_message(message):
 		for attachment in message.attachments:
 			if attachment.url.endswith('.gif'):
 				url = attachment.url
+				number_of_faces = gif_detect(url_to_image(url))
+				if number_of_faces > 0:
+					await message.delete()
+					await message.channel.send(
+                        "Image containing {0} anime faces was deleted".format(
+                        number_of_faces)
+                        )
 			elif attachment.url.endswith(ext):
 				url = attachment.url
-				number_of_faces = detect(url_to_image(url))
+				number_of_faces = detect(url)
 				if number_of_faces > 0:
 					await message.delete()
 					await message.channel.send(
 						"Image containing {0} anime faces was deleted".format(
 							number_of_faces)
 						)
+			if message.content.lower().endswith(ext):
+				url = message.content[
+					message.content.lower().index("http"):]
+				number_of_faces = detect(url)
+				if number_of_faces > 0:
+					await message.delete()
+					await message.channel.send(
+                        "Image containing {0} anime faces was deleted".format(
+                            number_of_faces)
+                        )
+			if attachment.content.lower().endswith('.gif'):
+				url = message.content[
+					message.content.lower().index("http"):]
+				number_of_faces = detect(url)
+				number_of_faces = gif_detect(url_to_image(url))
+				if number_of_faces > 0:
+					await message.delete()
+					await message.channel.send(
+                                            "Image containing {0} anime faces was deleted".format(
+                                                number_of_faces)
+                                        )
+		
+
 # Run Discord
 # Gets token from 'token.secret' file or Heroku
 if (os.environ.get('IS_HEROKU', None)):
