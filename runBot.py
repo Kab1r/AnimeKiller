@@ -7,6 +7,7 @@ import sys
 import os.path
 import numpy as np
 from urllib.request import Request, urlopen
+from moviepy.editor import VideoFileClip
 
 import os
 
@@ -48,6 +49,14 @@ def detect(image):
 									 minSize=(24, 24))
 	return len(faces)
 
+def gif_detect(gif):
+	clip = VideoFileClip(gif)
+	for frame in clip.iter_frames(): # Each Frame in gif Clip
+		number_of_faces = detect(frame)
+		if (number_of_faces > 0):
+			return number_of_faces
+	return 0 # None Found Case
+
 # Discord
 
 
@@ -73,7 +82,9 @@ async def on_ready():
 async def on_message(message):
 	for ext in picEXT:
 		for attachment in message.attachments:
-			if attachment.url.endswith(ext):
+			if attachment.url.endswith('.gif'):
+				url = attachment.url
+			elif attachment.url.endswith(ext):
 				url = attachment.url
 				number_of_faces = detect(url_to_image(url))
 				if number_of_faces > 0:
