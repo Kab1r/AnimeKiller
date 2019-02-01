@@ -82,16 +82,7 @@ async def on_ready():
 async def on_message(message):
 	for ext in picEXT:
 		for attachment in message.attachments:
-			if attachment.url.endswith('.gif'):
-				url = attachment.url
-				number_of_faces = gif_detect(url_to_image(url))
-				if number_of_faces > 0:
-					await message.delete()
-					await message.channel.send(
-                        "Image containing {0} anime faces was deleted".format(
-                        number_of_faces)
-                        )
-			elif attachment.url.endswith(ext):
+			if attachment.url.endswith(ext):
 				url = attachment.url
 				number_of_faces = detect(url)
 				if number_of_faces > 0:
@@ -110,16 +101,6 @@ async def on_message(message):
                         "Image containing {0} anime faces was deleted".format(
                             number_of_faces)
                         )
-		if message.content.lower().endswith('.gif'):
-				url = message.content[
-					message.content.lower().index("http"):]
-				number_of_faces = gif_detect(url_to_image(url))
-				if number_of_faces > 0:
-					await message.delete()
-					await message.channel.send(
-                                            "Image containing {0} anime faces was deleted".format(
-                                                number_of_faces)
-                                        )
 		
 
 # Run Discord
