@@ -84,7 +84,7 @@ async def on_message(message):
 		for attachment in message.attachments:
 			if attachment.url.endswith(ext):
 				url = attachment.url
-				number_of_faces = detect(url)
+				number_of_faces = detect(url_to_image(url))
 				if number_of_faces > 0:
 					await message.delete()
 					await message.channel.send(
@@ -94,7 +94,7 @@ async def on_message(message):
 		if message.content.lower().endswith(ext):
 				url = message.content[
 					message.content.lower().index("http"):]
-				number_of_faces = detect(url)
+				number_of_faces = detect(url_to_image(url))
 				if number_of_faces > 0:
 					await message.delete()
 					await message.channel.send(
