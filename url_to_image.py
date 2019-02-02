@@ -1,6 +1,5 @@
 from io import StringIO
 from urllib.request import Request, urlopen
-from matplotlib import cm
 from PIL import Image
 import cv2
 import numpy as np
