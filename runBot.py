@@ -65,7 +65,7 @@ descr = 'An open source solution to the anime epidemic on Discord.'
 bot = commands.Bot(command_prefix='ak!',
                    description=descr)
 
-picEXT = ['.jpeg', '.png', '.jpg']
+picEXT = ['.jpeg', '.png', '.jpg', '.gif']
 
 # On Ready Function
 
@@ -92,31 +92,39 @@ async def check_message(message, ext):
     # Looks at each attatchment's URL
     for attachment in message.attachments:
         if attachment.url.endswith(ext):
-            await check_url(attachment.url, message)
+            await check_url(attachment.url, message, (ext == '.gif'))
 
     # Looks at URLS
     if message.content.lower().endswith(ext):
-        await check_url(message.content[
-            message.content.lower().index("http"):
-        ], message)
+        await check_url(
+            message.content[message.content.lower().index("http"):],
+            message,
+            message.content.lower().endswith('.gif')
+        )
 
 
-async def check_url(url, message):
-    img = ImageConverter.url_to_pilImage(url)
-    number_of_faces, likelihood = detect2009(img)
-    if number_of_faces < 0:  # check with 2011 detection
-        number_of_faces = detect2011(img)
-    if number_of_faces > 0:
-        await delete_message(number_of_faces, likelihood, message)
+async def check_url(url, message, is_gif=False):
+    if(is_gif):
+        number_of_faces, likelihood = gif_detect(url)
+    else:  # Non-Gif
+        img = ImageConverter.url_to_pilImage(url)
+        number_of_faces, likelihood = detect2009(img)
+        if number_of_faces < 0:  # check with 2011 detection
+            number_of_faces = detect2011(img)
+    if number_of_faces > 0:  # check if anime is present
+        await delete_message(number_of_faces, likelihood, message, is_gif)
 
 
-async def delete_message(number_of_faces, likelihood, message):
+async def delete_message(number_of_faces, likelihood, message, is_gif=False):
     if likelihood == 0:  # Checks if uses 2011 detection
-        likelihood = 75
+        likelihood = 0.75
+    gif = ''  # not gif
+    if is_gif:
+        gif = 'per frame '
     await message.delete()
     await message.channel.send(
-        "Image containing {0} anime faces was deleted with {1}% certainty".format(
-            number_of_faces, '{0:.2f}'.format(likelihood*100))
+        "Image containing {0} anime faces {1}was deleted with {2}% certainty".format(
+            number_of_faces, gif, '{0:.2f}'.format(likelihood*100))
     )
 # Run Discord
 # Gets token from 'token.secret' file or Heroku
