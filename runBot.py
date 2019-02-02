@@ -99,8 +99,8 @@ async def on_message(message):
                 if number_of_faces > 0:
                     await message.delete()
                     await message.channel.send(
-                        "Image containing {0} anime faces was deleted with {1}%% accuracy".format(
-                            number_of_faces, likelihood)
+                        "Image containing {0} anime faces was deleted with {1}% accuracy".format(
+                            number_of_faces, likelihood*100)
                     )
         if message.content.lower().endswith(ext):
             url = message.content[
@@ -109,8 +109,8 @@ async def on_message(message):
             if number_of_faces > 0:
                 await message.delete()
                 await message.channel.send(
-                    "Image containing {0} anime faces was deleted with {1}%% accuracy".format(
-                        number_of_faces, likelihood)
+                    "Image containing {0} anime faces was deleted with {1}% accuracy".format(
+                        number_of_faces, likelihood*100)
                 )
 
 
