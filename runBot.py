@@ -97,23 +97,20 @@ async def on_message(message):
                 url = attachment.url
                 number_of_faces, likelihood = detect(url_to_image(url))
                 if number_of_faces > 0:
-                    await message.delete()
-                    await message.channel.send(
-                        "Image containing {0} anime faces was deleted with {1}% accuracy".format(
-                            number_of_faces, likelihood*100)
-                    )
+                    await delete_message(number_of_faces, likelihood, message)
         if message.content.lower().endswith(ext):
-            url = message.content[
-                message.content.lower().index("http"):]
+            url = message.content[message.content.lower().index("http"):]
             number_of_faces, likelihood = detect(url_to_image(url))
             if number_of_faces > 0:
-                await message.delete()
-                await message.channel.send(
-                    "Image containing {0} anime faces was deleted with {1}% accuracy".format(
-                        number_of_faces, likelihood*100)
-                )
+                await delete_message(number_of_faces, likelihood, message)
 
 
+async def delete_message(number_of_faces, likelihood, message):
+    await message.delete()
+    await message.channel.send(
+        "Image containing {0} anime faces was deleted with {1}% accuracy".format(
+            number_of_faces, '{0:.2f}'.format(likelihood*100))
+    )
 # Run Discord
 # Gets token from 'token.secret' file or Heroku
 if (os.environ.get('IS_HEROKU', None)):
