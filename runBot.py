@@ -1,38 +1,23 @@
-import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
-
-import animeface
-from PIL import Image
-import cv2
-import sys
 import os.path
-import numpy as np
+import sys
 from urllib.request import Request, urlopen
 
+import cv2
+import discord
+import numpy as np
+from discord.ext import commands
+from discord.ext.commands import Bot
+from PIL import Image
 
-def url_to_image(url):
-    # download the image, convert it to a NumPy array, and then read
-    # it into OpenCV format
-    print(url)
-    req = Request(url)
-    req.add_header(
-        'accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
-    )
-    req.add_header(
-        'user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.53 Safari/537.36'
-    )
-    resp = urlopen(req)
-    image = np.asarray(bytearray(resp.read()), dtype="uint8")
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    # return the image
-    return image
+import animeface
+from url_to_image import ImageConverter
 
 
-def detect(cv2image):
-    cv2image = cv2.cvtColor(cv2image, cv2.COLOR_BGR2RGB)
-    img = Image.fromarray(cv2image)
-    faces = animeface.detect(img)
+# https://github.com/nagadomi/animeface-2009
+# https://github.com/nya3jp/python-animeface
+def detect2009(pilImage):
+    pilImage = Image.fromarray(pilImage)
+    faces = animeface.detect(pilImage)
     likelihood = 0
     for face in faces:
         if(likelihood < face.likelihood):
@@ -90,15 +75,19 @@ async def on_message(message):
         if role.name.lower == 'unkilled':
             return
     for ext in picEXT:
+        # Looks at each attatchment
         for attachment in message.attachments:
             if attachment.url.endswith(ext):
                 url = attachment.url
-                number_of_faces, likelihood = detect(url_to_image(url))
+                number_of_faces, likelihood = detect2009(
+                    ImageConverter.url_to_pilImage(url))
                 if number_of_faces > 0:
                     await delete_message(number_of_faces, likelihood, message)
+        # Looks at URLS
         if message.content.lower().endswith(ext):
             url = message.content[message.content.lower().index("http"):]
-            number_of_faces, likelihood = detect(url_to_image(url))
+            number_of_faces, likelihood = detect2009(
+                ImageConverter.url_to_pilImage(url))
             if number_of_faces > 0:
                 await delete_message(number_of_faces, likelihood, message)
 

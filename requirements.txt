@@ -4,3 +4,4 @@ numpy
 requests
 moviepy
 animeface
+cStringIO
