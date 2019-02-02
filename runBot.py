@@ -9,11 +9,6 @@ import sys
 import os.path
 import numpy as np
 from urllib.request import Request, urlopen
-# from moviepy.editor import VideoFileClip
-
-# import os
-
-# cascade_file = "lbpcascade_animeface.xml"
 
 
 def url_to_image(url):
@@ -91,6 +86,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    for role in message.author.roles:
+        if role.name.lower == 'unkilled':
+            return
     for ext in picEXT:
         for attachment in message.attachments:
             if attachment.url.endswith(ext):
