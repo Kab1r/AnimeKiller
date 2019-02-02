@@ -1,5 +1,6 @@
 from io import StringIO
 from urllib.request import Request, urlopen
+from matplotlib import cm
 from PIL import Image
 import cv2
 import numpy as np
@@ -24,11 +25,9 @@ class ImageConverter:
 
     @staticmethod
     def url_to_pilImage(url):
-        img_file = ImageConverter.url_to_request(url)
-        img_file = Image.fromarray(np.asarray(
-            bytearray(img_file.read()), dtype="uint8"))
-        im = StringIO(img_file.read())
-        return Image.open(im)
+        cv2Image = ImageConverter.url_to_cv(url)
+        img_file = Image.fromarray(cv2Image)
+        return img_file
 
     @staticmethod
     def url_to_cv(url):
