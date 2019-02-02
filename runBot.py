@@ -16,7 +16,6 @@ from url_to_image import ImageConverter
 # https://github.com/nagadomi/animeface-2009
 # https://github.com/nya3jp/python-animeface
 def detect2009(pilImage):
-    pilImage = Image.fromarray(pilImage)
     faces = animeface.detect(pilImage)
     likelihood = 0
     for face in faces:
