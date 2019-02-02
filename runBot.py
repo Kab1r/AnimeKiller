@@ -72,29 +72,36 @@ async def on_ready():
 async def on_message(message):
     for role in message.author.roles:
         if role.name.lower == 'unkilled':
-            return
+            return # Breaks out of function
+
     for ext in picEXT:
-        # Looks at each attatchment
-        for attachment in message.attachments:
-            if attachment.url.endswith(ext):
-                url = attachment.url
-                number_of_faces, likelihood = detect2009(
-                    ImageConverter.url_to_pilImage(url))
-                if number_of_faces > 0:
-                    await delete_message(number_of_faces, likelihood, message)
-        # Looks at URLS
-        if message.content.lower().endswith(ext):
-            url = message.content[message.content.lower().index("http"):]
-            number_of_faces, likelihood = detect2009(
-                ImageConverter.url_to_pilImage(url))
-            if number_of_faces > 0:
-                await delete_message(number_of_faces, likelihood, message)
+        check_message(message, ext)
+
+
+async def check_message(message, ext):
+    # Looks at each attatchment's URL
+    for attachment in message.attachments:
+        if attachment.url.endswith(ext):
+            check_url(attachment.url, message)
+
+    # Looks at URLS
+    if message.content.lower().endswith(ext):
+        check_url(message.content[
+            message.content.lower().index("http"):
+                ], message)
+
+
+async def check_url(url, message):
+    number_of_faces, likelihood = detect2009(
+        ImageConverter.url_to_pilImage(url))
+    if number_of_faces > 0:
+        await delete_message(number_of_faces, likelihood, message)
 
 
 async def delete_message(number_of_faces, likelihood, message):
     await message.delete()
     await message.channel.send(
-        "Image containing {0} anime faces was deleted with {1}% accuracy".format(
+        "Image containing {0} anime faces was deleted with {1}% certainty".format(
             number_of_faces, '{0:.2f}'.format(likelihood*100))
     )
 # Run Discord
