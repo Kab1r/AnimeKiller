@@ -12,9 +12,12 @@ from PIL import Image
 import animeface
 from url_to_image import ImageConverter
 
+cascade_file = 'lbpcascade_animeface.xml'
 
 # https://github.com/nagadomi/animeface-2009
 # https://github.com/nya3jp/python-animeface
+
+
 def detect2009(pilImage):
     faces = animeface.detect(pilImage)
     likelihood = 0
@@ -23,21 +26,20 @@ def detect2009(pilImage):
             likelihood = face.likelihood
     return len(faces), likelihood
 
-# def detect(image):
-# 	if not os.path.isfile(cascade_file):
-# 		raise RuntimeError("%s: not found" % cascade_file)
-
-# 	cascade = cv2.CascadeClassifier(cascade_file)
-# 	# image = cv2.imread(filename, cv2.IMREAD_COLOR)
-# 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# 	gray = cv2.equalizeHist(gray)
-
-# 	faces = cascade.detectMultiScale(gray,
-# 									 # detector options
-# 									 scaleFactor=1.1,
-# 									 minNeighbors=5,
-# 									 minSize=(24, 24))
-# 	return len(faces)
+# https://github.com/nagadomi/lbpcascade_animeface
+def detect2011(image):
+    if not os.path.isfile(cascade_file):
+        raise RuntimeError("%s: not found" % cascade_file)
+    cascade = cv2.CascadeClassifier(cascade_file)
+    # image = cv2.imread(filename, cv2.IMREAD_COLOR)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
+    faces = cascade.detectMultiScale(gray,
+                                     # detector options
+                                     scaleFactor=1.1,
+                                     minNeighbors=5,
+                                     minSize=(24, 24))
+    return len(faces)
 
 # def gif_detect(url):
 # 	clip = VideoFileClip(url)
@@ -72,7 +74,7 @@ async def on_ready():
 async def on_message(message):
     for role in message.author.roles:
         if role.name.lower == 'unkilled':
-            return # Breaks out of function
+            return  # Breaks out of function
 
     for ext in picEXT:
         await check_message(message, ext)
@@ -88,17 +90,21 @@ async def check_message(message, ext):
     if message.content.lower().endswith(ext):
         await check_url(message.content[
             message.content.lower().index("http"):
-                ], message)
+        ], message)
 
 
 async def check_url(url, message):
-    number_of_faces, likelihood = detect2009(
-        ImageConverter.url_to_pilImage(url))
+    img = ImageConverter.url_to_pilImage(url)
+    number_of_faces, likelihood = detect2009(img)
+    if number_of_faces < 0: # check with 2011 detection
+        number_of_faces = detect2011(img)
     if number_of_faces > 0:
         await delete_message(number_of_faces, likelihood, message)
 
 
 async def delete_message(number_of_faces, likelihood, message):
+    if likelihood == 0: # Checks if uses 2011 detection
+        likelihood = 75
     await message.delete()
     await message.channel.send(
         "Image containing {0} anime faces was deleted with {1}% certainty".format(
