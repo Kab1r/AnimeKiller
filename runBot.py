@@ -44,7 +44,7 @@ def detect2011(image):
     return len(faces)
 
 
-def gif_detect(url): # uses 2009 detection only
+def gif_detect(url):  # uses 2009 detection only
     gif = ImageConverter.url_to_pilGif(url)
     total_number_of_faces = 0
     likelihood = 0
