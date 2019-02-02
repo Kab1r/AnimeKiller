@@ -25,6 +25,8 @@ class ImageConverter:
     @staticmethod
     def url_to_pilImage(url):
         img_file = ImageConverter.url_to_request(url)
+        img_file = Image.fromarray(np.asarray(
+            bytearray(img_file.read()), dtype="uint8"))
         im = StringIO(img_file.read())
         return Image.open(im)
 
