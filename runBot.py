@@ -75,18 +75,18 @@ async def on_message(message):
             return # Breaks out of function
 
     for ext in picEXT:
-        check_message(message, ext)
+        await check_message(message, ext)
 
 
 async def check_message(message, ext):
     # Looks at each attatchment's URL
     for attachment in message.attachments:
         if attachment.url.endswith(ext):
-            check_url(attachment.url, message)
+            await check_url(attachment.url, message)
 
     # Looks at URLS
     if message.content.lower().endswith(ext):
-        check_url(message.content[
+        await check_url(message.content[
             message.content.lower().index("http"):
                 ], message)
 
