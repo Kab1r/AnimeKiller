@@ -7,7 +7,7 @@ import discord
 import numpy as np
 from discord.ext import commands
 from discord.ext.commands import Bot
-from PIL import Image
+from PIL import Image, GifImagePlugin
 
 import animeface
 from url_to_image import ImageConverter
@@ -43,16 +43,22 @@ def detect2011(image):
                                      minSize=(24, 24))
     return len(faces)
 
-# def gif_detect(url):
-# 	clip = VideoFileClip(url)
-# 	for frame in clip.iter_frames(): # Each Frame in gif Clip
-# 		number_of_faces = detect(frame)
-# 		if (number_of_faces > 0):
-# 			return number_of_faces
-# 	return 0 # None Found Case
+
+def gif_detect(url): # uses 2009 detection only
+    gif = ImageConverter.url_to_pilGif(url)
+    total_number_of_faces = 0
+    likelihood = 0
+    for frameIndex in range(0, gif.n_frame):
+        tnof, ld = detect2009(
+            gif.seek(frameIndex))
+        total_number_of_faces += tnof
+        likelihood += ld
+    if likelihood > 1:
+        likelihood = 1
+    return total_number_of_faces/gif.n_frame, likelihood
+
 
 # Discord
-
 
 descr = 'An open source solution to the anime epidemic on Discord.'
 
