@@ -27,6 +27,8 @@ def detect2009(pilImage):
     return len(faces), likelihood
 
 # https://github.com/nagadomi/lbpcascade_animeface
+
+
 def detect2011(image):
     if not os.path.isfile(cascade_file):
         raise RuntimeError("%s: not found" % cascade_file)
@@ -96,14 +98,14 @@ async def check_message(message, ext):
 async def check_url(url, message):
     img = ImageConverter.url_to_pilImage(url)
     number_of_faces, likelihood = detect2009(img)
-    if number_of_faces < 0: # check with 2011 detection
+    if number_of_faces < 0:  # check with 2011 detection
         number_of_faces = detect2011(img)
     if number_of_faces > 0:
         await delete_message(number_of_faces, likelihood, message)
 
 
 async def delete_message(number_of_faces, likelihood, message):
-    if likelihood == 0: # Checks if uses 2011 detection
+    if likelihood == 0:  # Checks if uses 2011 detection
         likelihood = 75
     await message.delete()
     await message.channel.send(
