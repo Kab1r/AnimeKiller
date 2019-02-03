@@ -99,7 +99,7 @@ async def check_message(message, ext):
         await check_url(
             message.content[message.content.lower().index("http"):],
             message,
-            message.content.lower().endswith('.gif')
+            (ext == '.gif')
         )
 
 
