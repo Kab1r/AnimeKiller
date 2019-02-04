@@ -4,10 +4,11 @@ from urllib.request import Request, urlopen
 
 import cv2
 import discord
+import imageio
 import numpy as np
 from discord.ext import commands
 from discord.ext.commands import Bot
-from PIL import Image, GifImagePlugin
+from PIL import Image
 
 import animeface
 from url_to_image import ImageConverter
@@ -45,19 +46,21 @@ def detect2011(image):
 
 
 def gif_detect(url):  # uses 2009 detection only
-    gif = ImageConverter.url_to_pilGif(url)
+    gif = ImageConverter.url_to_gif(url)
     total_number_of_faces = 0
     likelihood = 0
-    for frameIndex in range(0, gif.n_frames):
-        frameImg = gif.seek(frameIndex)
-        frameImg.mode = 'RGB'
-        tnof, ld = detect2009(
-            frameImg)
-        total_number_of_faces += tnof
-        likelihood += ld
+    images = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) for img in gif]
+    for image in images:
+        (nof, lh) = detect2009(Image.fromarray(image))
+        total_number_of_faces += nof
+        likelihood += lh
+    if likelihood == 0:
+        for image in images:
+            total_number_of_faces += detect2011(image)
+        likelihood = 0.75
     if likelihood > 1:
         likelihood = 1
-    return total_number_of_faces/gif.n_frame, likelihood
+    return total_number_of_faces/len(images), likelihood
 
 
 # Discord

@@ -2,8 +2,9 @@ from io import StringIO
 from urllib.request import Request, urlopen
 
 import cv2
+import imageio
 import numpy as np
-from PIL import GifImagePlugin, Image
+from PIL import Image
 
 
 class ImageConverter:
@@ -38,8 +39,7 @@ class ImageConverter:
         return cvImage
 
     @staticmethod
-    def url_to_pilGif(url):
-        img_file = ImageConverter.url_to_request(url)
-        img = Image.open(img_file)
-        img.load()
-        return img
+    def url_to_gif(url):
+        img_file = ImageConverter.url_to_request(url).read()
+        img_bytes = bytearray(img_file)
+        return imageio.mimread(img_bytes)
