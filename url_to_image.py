@@ -40,4 +40,6 @@ class ImageConverter:
     @staticmethod
     def url_to_pilGif(url):
         img_file = ImageConverter.url_to_request(url)
-        return Image.open(img_file).load().split()
+        img = Image.open(img_file)
+        img.load()
+        return img
