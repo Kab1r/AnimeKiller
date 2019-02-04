@@ -49,8 +49,10 @@ def gif_detect(url):  # uses 2009 detection only
     total_number_of_faces = 0
     likelihood = 0
     for frameIndex in range(0, gif.n_frames):
+        frameImg = gif.seek(frameIndex)
+        frameImg.mode = 'RGB'
         tnof, ld = detect2009(
-            gif.seek(frameIndex))
+            frameImg)
         total_number_of_faces += tnof
         likelihood += ld
     if likelihood > 1:
