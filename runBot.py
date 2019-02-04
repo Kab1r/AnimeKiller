@@ -48,7 +48,7 @@ def gif_detect(url):  # uses 2009 detection only
     gif = ImageConverter.url_to_pilGif(url)
     total_number_of_faces = 0
     likelihood = 0
-    for frameIndex in range(0, gif.n_frame):
+    for frameIndex in range(0, gif.n_frames):
         tnof, ld = detect2009(
             gif.seek(frameIndex))
         total_number_of_faces += tnof
