@@ -95,7 +95,7 @@ async def check_message(message, ext):
             await check_url(attachment.url, message, (ext == '.gif'))
 
     # Looks at URLS
-    if message.content.lower().contains(ext):
+    if message.content.lower().find(ext) != -1:
         await check_url(
             message.content[message.content.lower().index(
                 "http"):message.content.lower().index(ext + len(ext))],
