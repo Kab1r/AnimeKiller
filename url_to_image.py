@@ -40,6 +40,8 @@ class ImageConverter:
 
     @staticmethod
     def url_to_gif(url):
+        file_name = 'temp.gif'
         img_file = ImageConverter.url_to_request(url).read()
-        img_bytes = bytearray(img_file)
-        return imageio.mimread(img_bytes)
+        #img_bytes = bytearray(img_file)
+        open(file_name, 'wb+').write(img_file)
+        return imageio.mimread(file_name)
