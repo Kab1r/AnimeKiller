@@ -139,7 +139,7 @@ async def check_url(url, message, is_gif=False):
         number_of_faces, likelihood = detect2009(img)
         if number_of_faces < 0:  # check with 2011 detection
             number_of_faces = detect2011(img)
-    if number_of_faces > 0:  # check if anime is present
+    if type(number_of_faces) is str or number_of_faces > 0:  # check if anime is present
         await delete_message(number_of_faces, likelihood, message, is_gif)
 
 
