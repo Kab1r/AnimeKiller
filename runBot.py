@@ -1,3 +1,4 @@
+import json
 import os.path
 import sys
 from urllib.request import Request, urlopen
@@ -8,12 +9,19 @@ import imageio
 import numpy as np
 from discord.ext import commands
 from discord.ext.commands import Bot
+from google.cloud import vision
+from google.cloud.vision import types
+from google.oauth2 import service_account
 from PIL import Image
 
 import animeface
 from url_to_image import ImageConverter
 
 cascade_file = 'lbpcascade_animeface.xml'
+google_credentials = service_account.Credentials.from_service_account_info(
+    json.loads(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')))
+visionary = vision.ImageAnnotatorClient(
+    credentials=google_credentials)
 
 # https://github.com/nagadomi/animeface-2009
 # https://github.com/nya3jp/python-animeface
@@ -45,10 +53,14 @@ def detect2011(image):
     return len(faces)
 
 
-def gif_detect(url):  # uses 2009 detection only
-    gif = ImageConverter.url_to_gif(url)
+def gif_detect(url): # Testing google cloud for gifs to reduce slow downs
     total_number_of_faces = 0
     likelihood = 0
+
+    total_number_of_faces, likelihood = vision_detect(url)
+    if likelihood > 0.0:
+        return total_number_of_faces, likelihood
+    gif = ImageConverter.url_to_gif(url)
     images = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) for img in gif]
     for image in images:
         (nof, lh) = detect2009(Image.fromarray(image))
@@ -63,7 +75,17 @@ def gif_detect(url):  # uses 2009 detection only
     return total_number_of_faces/len(images), likelihood
 
 
+def vision_detect(url):
+    image = types.Image()
+    image.source.image_uri = url
+    response = visionary.annotate_image(image=image)
+    labels = response.label_annotations
+    for label in labels:
+        if(label.discription.lower() == 'anime'):
+            return 'a number of', label.score
+    return 0, 0
 # Discord
+
 
 descr = 'An open source solution to the anime epidemic on Discord.'
 

@@ -5,3 +5,5 @@ requests
 animeface
 Pillow
 imageio
+google-cloud-vision
+google-auth
