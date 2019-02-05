@@ -78,7 +78,7 @@ def gif_detect(url): # Testing google cloud for gifs to reduce slow downs
 def vision_detect(url):
     image = types.Image()
     image.source.image_uri = url
-    response = visionary.annotate_image(image=image)
+    response = visionary.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
         if(label.discription.lower() == 'anime'):
