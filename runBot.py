@@ -150,9 +150,11 @@ async def delete_message(number_of_faces, likelihood, message, is_gif=False):
     if is_gif:
         gif = 'per frame '
     await message.delete()
+    if type(number_of_faces) is not str:
+        number_of_faces ='{0:.2f}'.format(number_of_faces)
     await message.channel.send(
         "Image containing {0} anime faces {1}was deleted with {2}% certainty".format(
-            '{0:.2f}'.format(number_of_faces), gif, '{0:.2f}'.format(likelihood*100))
+            number_of_faces, gif, '{0:.2f}'.format(likelihood*100))
     )
 # Run Discord
 # Gets token from 'token.secret' file or Heroku
