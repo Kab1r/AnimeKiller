@@ -81,7 +81,7 @@ def vision_detect(url):
     response = visionary.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        if(label.discription.lower() == 'anime'):
+        if(label.description.lower() == 'anime'):
             return 'a number of', label.score
     return 0, 0
 # Discord
