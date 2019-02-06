@@ -1,10 +1,7 @@
-from io import StringIO
 from urllib.request import Request, urlopen
 
 import cv2
-import imageio
 import numpy as np
-from PIL import Image
 
 
 class ImageConverter:
@@ -25,23 +22,9 @@ class ImageConverter:
         return urlopen(req)
 
     @staticmethod
-    def url_to_pilImage(url):
-        cv2Image = ImageConverter.url_to_cv(url)
-        img_file = Image.fromarray(cv2Image)
-        return img_file
-
-    @staticmethod
     def url_to_cv(url):
         img_file = ImageConverter.url_to_request(url)
         npArrayImg = np.asarray(bytearray(img_file.read()), dtype="uint8")
         cvImage = cv2.imdecode(npArrayImg, cv2.IMREAD_COLOR)
         # return the image
         return cvImage
-
-    @staticmethod
-    def url_to_gif(url):
-        file_name = 'temp.gif'
-        img_file = ImageConverter.url_to_request(url).read()
-        #img_bytes = bytearray(img_file)
-        open(file_name, 'wb+').write(img_file)
-        return imageio.mimread(file_name)
