@@ -134,6 +134,7 @@ async def check_message(message, ext):
 async def check_url(url, message, is_gif=False):
     if(is_gif):
         number_of_faces, likelihood = gif_detect(url)
+        print(0)
     else:  # Non-Gif
         # Google Vision Detection
         number_of_faces, likelihood = vision_detect(url)
@@ -143,6 +144,7 @@ async def check_url(url, message, is_gif=False):
             if likelihood < 0.0:  # 2011 detection
                 number_of_faces = detect2011(img)
     # check if anime is present
+    print(0.5)
     if likelihood > 0.0 or number_of_faces > 1.0:
         print(1)
         await delete_message(number_of_faces, likelihood, message, is_gif)
