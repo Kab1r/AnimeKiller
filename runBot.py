@@ -137,13 +137,14 @@ async def check_url(url, message, is_gif=False):
     else:  # Non-Gif
         # Google Vision Detection
         number_of_faces, likelihood = vision_detect(url)
-        if likelihood < 0:  # 2009 detection
+        if likelihood < 0.0:  # 2009 detection
             img = ImageConverter.url_to_pilImage(url)
             number_of_faces, likelihood = detect2009(img)
-            if number_of_faces < 0:  # 2011 detection
+            if likelihood < 0.0:  # 2011 detection
                 number_of_faces = detect2011(img)
     # check if anime is present
-    if type(number_of_faces) is str or number_of_faces > 0:
+    if likelihood > 0.0 or number_of_faces > 1.0:
+        print(1)
         await delete_message(number_of_faces, likelihood, message, is_gif)
 
 
@@ -151,6 +152,7 @@ async def delete_message(number_of_faces, likelihood, message, is_gif=False):
     if likelihood == 0:  # Checks if uses 2011 detection
         likelihood = 0.75
     gif = ''  # not gif
+    print(2)
     if is_gif:
         gif = 'per frame '
     await message.delete()
