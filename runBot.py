@@ -53,7 +53,7 @@ def detect2011(image):
     return len(faces)
 
 
-def gif_detect(url): # Testing google cloud for gifs to reduce slow downs
+def gif_detect(url):  # Testing google cloud for gifs to reduce slow downs
     total_number_of_faces = 0
     likelihood = 0
 
@@ -135,11 +135,15 @@ async def check_url(url, message, is_gif=False):
     if(is_gif):
         number_of_faces, likelihood = gif_detect(url)
     else:  # Non-Gif
-        img = ImageConverter.url_to_pilImage(url)
-        number_of_faces, likelihood = detect2009(img)
-        if number_of_faces < 0:  # check with 2011 detection
-            number_of_faces = detect2011(img)
-    if type(number_of_faces) is str or number_of_faces > 0:  # check if anime is present
+        # Google Vision Detection
+        number_of_faces, likelihood = vision_detect(url)
+        if number_of_faces < 0:  # 2009 detection
+            img = ImageConverter.url_to_pilImage(url)
+            number_of_faces, likelihood = detect2009(img)
+            if number_of_faces < 0:  # 2011 detection
+                number_of_faces = detect2011(img)
+    # check if anime is present
+    if type(number_of_faces) is str or number_of_faces > 0:
         await delete_message(number_of_faces, likelihood, message, is_gif)
 
 
@@ -151,7 +155,7 @@ async def delete_message(number_of_faces, likelihood, message, is_gif=False):
         gif = 'per frame '
     await message.delete()
     if type(number_of_faces) is not str:
-        number_of_faces ='{0:.2f}'.format(number_of_faces)
+        number_of_faces = '{0:.2f}'.format(number_of_faces)
     await message.channel.send(
         "Image containing {0} anime faces {1}was deleted with {2}% certainty".format(
             number_of_faces, gif, '{0:.2f}'.format(likelihood*100))
