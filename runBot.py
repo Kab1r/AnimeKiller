@@ -76,7 +76,7 @@ def gif_detect(url):  # Testing google cloud for gifs to reduce slow downs
 
 
 def vision_detect(url):
-    image = visionary.image(
+    image = types.image(
         content=cv2.imencode('.jpg', ImageConverter.url_to_cv(url))[1].tostring())
     #image = types.Image()
     #image.source.image_uri = url
