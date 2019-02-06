@@ -137,7 +137,7 @@ async def check_url(url, message, is_gif=False):
     else:  # Non-Gif
         # Google Vision Detection
         number_of_faces, likelihood = vision_detect(url)
-        if number_of_faces < 0:  # 2009 detection
+        if likelihood < 0:  # 2009 detection
             img = ImageConverter.url_to_pilImage(url)
             number_of_faces, likelihood = detect2009(img)
             if number_of_faces < 0:  # 2011 detection
