@@ -25,8 +25,8 @@ def vision_detect(url):
     labels = response.label_annotations
     for label in labels:
         if(label.description.lower() == 'anime'):
-            return 'a number of', label.score
-    return 0, 0
+            return label.score
+    return 0
 # Discord
 
 
