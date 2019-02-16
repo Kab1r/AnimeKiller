@@ -1,6 +1,11 @@
+"""
+    AnimeKiller deletes images and urls
+    in discord messages if they are marked
+    as anime by Google Cloud Vision. The
+    "run_bot" module is the main file.
+"""
 import json
 import os.path
-import re
 
 import cv2
 from discord.ext import commands
@@ -58,8 +63,7 @@ async def check_message(message, ext):
             await check_url(attachment.url, message)
 
     # Looks at URLS
-    urls = message.content.lower().split()# re.findall(
-        #'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content.lower())
+    urls = message.content.lower().split()
     for url in urls:
         await check_url(url, message)
 
