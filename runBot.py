@@ -58,8 +58,8 @@ async def check_message(message, ext):
             await check_url(attachment.url, message)
 
     # Looks at URLS
-    urls = re.findall(
-        'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content.lower())
+    urls = message.content.lower().split()# re.findall(
+        #'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content.lower())
     for url in urls:
         await check_url(url, message)
 
