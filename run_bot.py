@@ -104,9 +104,17 @@ def vision_detect(url):
     for label in labels:
         if label.description.lower() == 'anime':
             return label.score
+    return await vision_detect_url(url)
+
+async def vision_detect_url(url):
+    image = types.Image()
+    image.source.image_uri = url
+    response = VISIONARY.label_detection(image=image)
+    labels = response.label_annotations
+    for label in labels:
+        if label.description.lower() == 'anime':
+            return label.score
     return 0
-
-
 async def delete_message(likelihood, message):
     """
         Deletes given message,
