@@ -62,10 +62,15 @@ async def on_message(message):
     for role in message.author.roles:
         if role.name.lower == 'unkilled':
             return  # Breaks out of function
-
+    
+    await check_embeds(message)
     for ext in PICTURE_EXT:
         await check_message(message, ext)
 
+
+async def check_embeds(message):
+    for embed in message.embeds:
+        check_url(embed.image.url, message)
 
 async def check_message(message, ext):
     """
