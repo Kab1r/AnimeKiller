@@ -70,7 +70,7 @@ async def on_message(message):
 
 async def check_embeds(message):
     for embed in message.embeds:
-        check_url(embed.image.url, message)
+        await check_url(embed.image.url, message)
 
 async def check_message(message, ext):
     """
