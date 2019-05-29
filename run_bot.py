@@ -106,7 +106,7 @@ def vision_detect(url):
             return label.score
     return vision_detect_url(url)
 
-async def vision_detect_url(url):
+def vision_detect_url(url):
     image = types.Image()
     image.source.image_uri = url
     response = VISIONARY.label_detection(image=image)
