@@ -104,7 +104,7 @@ def vision_detect(url):
     for label in labels:
         if label.description.lower() == 'anime':
             return label.score
-    return await vision_detect_url(url)
+    return vision_detect_url(url)
 
 async def vision_detect_url(url):
     image = types.Image()
@@ -115,6 +115,7 @@ async def vision_detect_url(url):
         if label.description.lower() == 'anime':
             return label.score
     return 0
+
 async def delete_message(likelihood, message):
     """
         Deletes given message,
