@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
+discord.py
 opencv-python-headless==3.4.5.20
 numpy
 requests
