@@ -5,17 +5,17 @@
     "run_bot" module is the main file.
 """
 # Copyright (C) 2019  Kabir Kwatra
-# 
+#
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU Affero General Public License as published
 #     by the Free Software Foundation, either version 3 of the License, or
 #     (at your option) any later version.
-# 
+#
 #     This program is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU Affero General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU Affero General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -59,10 +59,10 @@ async def on_message(message):
         with the role are ignored
         from the anime removal.
     """
-    for role in message.author.roles:
+    for role in message.author.roles if message.guild is not None else []:
         if role.name.lower == 'unkilled':
             return  # Breaks out of function
-    
+
     await check_embeds(message)
     for ext in PICTURE_EXT:
         await check_message(message, ext)
@@ -71,6 +71,7 @@ async def on_message(message):
 async def check_embeds(message):
     for embed in message.embeds:
         await check_url(embed.image.url, message)
+
 
 async def check_message(message, ext):
     """
@@ -106,6 +107,7 @@ def vision_detect(url):
             return label.score
     return vision_detect_url(url)
 
+
 def vision_detect_url(url):
     image = types.Image()
     image.source.image_uri = url
@@ -115,6 +117,7 @@ def vision_detect_url(url):
         if label.description.lower() == 'anime':
             return label.score
     return 0
+
 
 async def delete_message(likelihood, message):
     """
