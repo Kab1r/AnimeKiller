@@ -7,7 +7,7 @@ AnimeKiller is a bot that allows you to delete Anime from your Discord server, u
 This instructions should help you getting the bot up and running:
 
 - Create a Google cloud account.
-- Follow (this)[https://cloud.google.com/vision/docs/auth]instructions by Google to generate a JSON file.
+- Follow [this](https://cloud.google.com/vision/docs/auth) instructions by Google to generate a JSON file.
 - Export your enviroment variables, like this:
 
 **Bot token**:
