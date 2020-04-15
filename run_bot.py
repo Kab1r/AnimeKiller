@@ -103,7 +103,7 @@ def vision_detect(url):
     response = VISIONARY.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        if label.description.lower() == 'kpop':
+        if label.description.lower() == 'anime':
             return label.score
     return vision_detect_url(url)
 
@@ -114,7 +114,7 @@ def vision_detect_url(url):
     response = VISIONARY.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        if label.description.lower() == 'kpop':
+        if label.description.lower() == 'anime':
             return label.score
     return 0
 
@@ -126,7 +126,7 @@ async def delete_message(likelihood, message):
     """
     await message.delete()
     await message.channel.send(
-        "Image containing kpop was deleted with {0}% certainty".format(
+        "Image containing anime was deleted with {0}% certainty".format(
             '{0:.2f}'.format(likelihood*100))
     )
 # Creates Vission Client
