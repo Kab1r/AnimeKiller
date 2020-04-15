@@ -132,10 +132,11 @@ async def delete_message(likelihood, message):
 # Creates Vission Client
 # Gets token and credentials from Env Var
 
-service_account_info = json.load(open(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
+service_account_info = json.load(
+    open(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
 VISIONARY = vision.ImageAnnotatorClient(
     credentials=service_account.Credentials.from_service_account_info(service_account_info
 )
 )
-bot_token = os.environ.get('TOKEN')
-BOT.run(bot_token)
+TOKEN = os.environ.get('TOKEN')
+BOT.run(TOKEN)
