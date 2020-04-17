@@ -96,9 +96,8 @@ async def check_url(url, message):
 
 def vision_detect(url):
     """String url -> Google Cloud -> Anime Score"""
-    image = types.Image(
-        content=cv2.imencode(".jpg", ImageConverter.url_to_cv(url))[1].tostring()
-    )
+    image = types.Image(content=cv2.imencode(
+        ".jpg", ImageConverter.url_to_cv(url))[1].tostring())
     response = VISIONARY.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
@@ -126,9 +125,7 @@ async def delete_message(likelihood, message):
     await message.delete()
     await message.channel.send(
         "Image containing anime was deleted with {0}% certainty".format(
-            "{0:.2f}".format(likelihood * 100)
-        )
-    )
+            "{0:.2f}".format(likelihood * 100)))
 
 
 # Creates Vission Client
@@ -136,15 +133,13 @@ async def delete_message(likelihood, message):
 
 if os.path.isfile(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")):
     service_account_info = json.load(
-        open(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
-    )
+        open(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
 else:
-    service_account_info = json.loads(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+    service_account_info = json.loads(
+        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 
 VISIONARY = vision.ImageAnnotatorClient(
     credentials=service_account.Credentials.from_service_account_info(
-        service_account_info
-    )
-)
+        service_account_info))
 TOKEN = os.environ.get("TOKEN")
 BOT.run(TOKEN)
