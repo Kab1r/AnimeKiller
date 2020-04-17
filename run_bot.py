@@ -18,7 +18,6 @@
 #
 #     You should have received a copy of the GNU Affero General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import json
 import os.path
 
@@ -30,12 +29,11 @@ from google.oauth2 import service_account
 
 from url_to_image import ImageConverter
 
-DESCRIPTION = 'An open source solution to the anime epidemic on Discord.'
+DESCRIPTION = "An open source solution to the anime epidemic on Discord."
 
-BOT = commands.Bot(command_prefix='ak!',
-                   description=DESCRIPTION)
+BOT = commands.Bot(command_prefix="ak!", description=DESCRIPTION)
 
-PICTURE_EXT = ['.jpeg', '.png', '.jpg', '.gif']
+PICTURE_EXT = [".jpeg", ".png", ".jpg", ".gif"]
 
 
 @BOT.event
@@ -44,9 +42,9 @@ async def on_ready():
         Displays a simple
         message on boot
     """
-    print('Logged in as')
+    print("Logged in as")
     print(BOT.user.name)
-    print('ID:')
+    print("ID:")
     print(BOT.user.id)
 
 
@@ -60,7 +58,7 @@ async def on_message(message):
         from the anime removal.
     """
     for role in message.author.roles if message.guild is not None else []:
-        if role.name.lower == 'unkilled':
+        if role.name.lower == "unkilled":
             return  # Breaks out of function
 
     await check_embeds(message)
@@ -98,12 +96,12 @@ async def check_url(url, message):
 
 def vision_detect(url):
     """String url -> Google Cloud -> Anime Score"""
-    image = types.Image(
-        content=cv2.imencode('.jpg', ImageConverter.url_to_cv(url))[1].tostring())
+    image = types.Image(content=cv2.imencode(
+        ".jpg", ImageConverter.url_to_cv(url))[1].tostring())
     response = VISIONARY.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        if label.description.lower() == 'anime':
+        if label.description.lower() == "anime":
             return label.score
     return vision_detect_url(url)
 
@@ -114,7 +112,7 @@ def vision_detect_url(url):
     response = VISIONARY.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        if label.description.lower() == 'anime':
+        if label.description.lower() == "anime":
             return label.score
     return 0
 
@@ -127,20 +125,21 @@ async def delete_message(likelihood, message):
     await message.delete()
     await message.channel.send(
         "Image containing anime was deleted with {0}% certainty".format(
-            '{0:.2f}'.format(likelihood*100))
-    )
+            "{0:.2f}".format(likelihood * 100)))
+
+
 # Creates Vission Client
 # Gets token and credentials from Env Var
 
+if os.path.isfile(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")):
+    service_account_info = json.load(
+        open(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
+else:
+    service_account_info = json.loads(
+        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+
 VISIONARY = vision.ImageAnnotatorClient(
     credentials=service_account.Credentials.from_service_account_info(
-        json.loads(
-            os.environ.get(
-                'GOOGLE_APPLICATION_CREDENTIALS'
-            )
-        )
-    )
-)
-
-TOKEN = os.environ.get('TOKEN')
+        service_account_info))
+TOKEN = os.environ.get("TOKEN")
 BOT.run(TOKEN)
